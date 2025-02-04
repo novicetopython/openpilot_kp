@@ -525,7 +525,7 @@ OpenpilotUserEnv::OpenpilotUserEnv() : ButtonControl(tr("Get Your Params"), "", 
         QString repoid = InputDialog::getText(tr("Input your repository"), this, "github.com/"+userid, false, 1, "kisapilot_user");
         if (repoid.length() > 0) {
           getRepoID(repoid);
-          QString branchid = InputDialog::getText(tr("Input your branch"), this, "github.com/"+userid+"/"+repoid, false, 1, "preset1");
+          QString branchid = InputDialog::getText(tr("Input your branch"), this, "github.com/"+userid+"/"+repoid, false, 1, "preset");
           if (branchid.length() > 0) {
             getBranchID(branchid);
             QString fileid = InputDialog::getText(tr("Input your file"), this, "github.com/"+userid+"/"+repoid+"/"+branchid, false, 1, "user_params.txt");
