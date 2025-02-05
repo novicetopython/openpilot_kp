@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import math
+import numpy as np
 from typing import SupportsFloat
 
 from cereal import car, log
@@ -22,7 +23,6 @@ from openpilot.selfdrive.controls.lib.longcontrol import LongControl
 from openpilot.selfdrive.controls.lib.vehicle_model import VehicleModel
 from openpilot.selfdrive.locationd.helpers import PoseCalibrator, Pose
 
-from openpilot.common.numpy_fast import interp
 
 from decimal import Decimal
 import openpilot.common.log as trace1
@@ -175,32 +175,35 @@ class Controls:
 
     # accel PID loop
     pid_accel_limits = self.CI.get_pid_accel_limits(self.CP, CS.vEgo, CS.vCruise * CV.KPH_TO_MS)
-    actuators.accel, actuators.oaccel = self.LoC.update(CC.longActive, CS, long_plan.aTarget, long_plan.shouldStop, pid_accel_limits, long_plan.longitudinalPlanSource, self.sm['carOutput'].actuatorsOutput, self.sm['radarState'])
+    result = self.LoC.update(CC.longActive, CS, long_plan.aTarget, long_plan.shouldStop, pid_accel_limits, long_plan.longitudinalPlanSource, self.sm['carOutput'].actuatorsOutput, self.sm['radarState'])
+    actuators.accel, actuators.oaccel = float(result[0]), float(result[1])
 
     # Steering PID loop and lateral MPC
     if self.legacy_lane_mode == 2:
       model_speed = self.sm['lateralPlan'].modelSpeed
       desired_curvature1, self.desired_curvature_rate = get_lag_adjusted_curvature(self.CP, CS.vEgo, lat_plan.psis, lat_plan.curvatures, lat_plan.curvatureRates)
       desired_curvature2 = clip_curvature(CS.vEgo, self.desired_curvature, model_v2.action.desiredCurvature)
-      desired_curvature3 = interp(CS.vEgo, [0.3, 1.0], [desired_curvature1, desired_curvature2])
-      self.desired_curvature = interp(model_speed, [30, 80], [desired_curvature3, desired_curvature1])
+      desired_curvature3 = np.interp(CS.vEgo, [0.3, 1.0], [desired_curvature1, desired_curvature2])
+      self.desired_curvature = np.interp(model_speed, [30, 80], [desired_curvature3, desired_curvature1])
       if lat_plan.laneChangeState != LaneChangeState.off:
         self.desired_curvature = desired_curvature2
     elif self.legacy_lane_mode == 1:
       model_speed = self.sm['lateralPlan'].modelSpeed
       desired_curvature1, self.desired_curvature_rate = get_lag_adjusted_curvature(self.CP, CS.vEgo, lat_plan.psis, lat_plan.curvatures, lat_plan.curvatureRates)
       desired_curvature2 = clip_curvature(CS.vEgo, self.desired_curvature, model_v2.action.desiredCurvature)
-      desired_curvature3 = interp(CS.vEgo, [0.3, 1.0], [desired_curvature1, desired_curvature2])
-      self.desired_curvature = interp(model_speed, [29, 30], [desired_curvature3, desired_curvature1])
+      desired_curvature3 = np.interp(CS.vEgo, [0.3, 1.0], [desired_curvature1, desired_curvature2])
+      self.desired_curvature = np.interp(model_speed, [29, 30], [desired_curvature3, desired_curvature1])
       if lat_plan.laneChangeState != LaneChangeState.off:
         self.desired_curvature = desired_curvature2
     else:
       self.desired_curvature = clip_curvature(CS.vEgo, self.desired_curvature, model_v2.action.desiredCurvature)
       self.desired_curvature_rate = 0.0
-    actuators.curvature = self.desired_curvature
-    actuators.steer, actuators.steeringAngleDeg, lac_log = self.LaC.update(CC.latActive, CS, self.VM, lp,
+    actuators.curvature = float(self.desired_curvature)
+    steer, steeringAngleDeg, lac_log = self.LaC.update(CC.latActive, CS, self.VM, lp,
                                                                             self.steer_limited, self.desired_curvature,
                                                                             self.desired_curvature_rate, self.calibrated_pose) # TODO what if not available
+    actuators.steer = float(steer)
+    actuators.steeringAngleDeg = float(steeringAngleDeg)
     self.desired_angle_deg = actuators.steeringAngleDeg
 
     # Ensure no NaNs/Infs
@@ -287,8 +290,8 @@ class Controls:
 
     cs.longitudinalPlanMonoTime = self.sm.logMonoTime['longitudinalPlan']
     cs.lateralPlanMonoTime = self.sm.logMonoTime['lateralPlan'] if self.legacy_lane_mode else self.sm.logMonoTime['modelV2']
-    cs.desiredCurvature = self.desired_curvature
-    cs.desiredCurvatureRate = self.desired_curvature_rate
+    cs.desiredCurvature = float(self.desired_curvature)
+    cs.desiredCurvatureRate = float(self.desired_curvature_rate)
     cs.longControlState = self.LoC.long_control_state
     cs.upAccelCmd = float(self.LoC.pid.p)
     cs.uiAccelCmd = float(self.LoC.pid.i)
