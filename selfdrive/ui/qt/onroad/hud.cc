@@ -166,13 +166,13 @@ void HudRenderer::draw(QPainter &p, const QRect &surface_rect) {
         }
       }
     }
-    if (s->scene.navi_select == 1) {
+    if (s->scene.navi_select == 1 || s->scene.navi_select == 3) {
       if (s->scene.liveENaviData.ekisasafetysign != "") uiText(p, ui_viz_rx, ui_viz_ry+560, "CS:" + QString::fromStdString(s->scene.liveENaviData.ekisasafetysign));
       if (s->scene.liveENaviData.ekisasafetydist) uiText(p, ui_viz_rx, ui_viz_ry+600, "SL:" + QString::number(s->scene.liveENaviData.ekisaspeedlimit, 'f', 0) + "/DS:" + QString::number(s->scene.liveENaviData.ekisasafetydist, 'f', 0));
       if (s->scene.liveENaviData.ekisaturninfo != "") uiText(p, ui_viz_rx, ui_viz_ry+640, "TI:" + QString::fromStdString(s->scene.liveENaviData.ekisaturninfo) + "/DT:" + QString::number(s->scene.liveENaviData.ekisadisttoturn, 'f', 0));
       if (s->scene.liveENaviData.ekisaroadlimitspeed > 0 && s->scene.liveENaviData.ekisaroadlimitspeed < 200) uiText(p, ui_viz_rx, ui_viz_ry+680, "RS:" + QString::number(s->scene.liveENaviData.ekisaroadlimitspeed, 'f', 0));
       if (s->scene.liveENaviData.ekisaishighway || s->scene.liveENaviData.ekisaistunnel) uiText(p, ui_viz_rx, ui_viz_ry+720, "H:" + QString::number(s->scene.liveENaviData.ekisaishighway, 'f', 0) + "/T:" + QString::number(s->scene.liveENaviData.ekisaistunnel, 'f', 0));
-    } else if (s->scene.navi_select == 2) {
+    } else if (s->scene.navi_select == 2 || s->scene.navi_select == 4) {
       if (s->scene.liveENaviData.ewazealertdistance) uiText(p, ui_viz_rx, ui_viz_ry+560, "AS:" + QString::number(s->scene.liveENaviData.ewazealertid, 'f', 0) + "/DS:" + QString::number(s->scene.liveENaviData.ewazealertdistance, 'f', 0));
       if (s->scene.liveENaviData.ewazealertdistance) uiText(p, ui_viz_rx, ui_viz_ry+600, "T:" + QString::fromStdString(s->scene.liveENaviData.ewazealerttype));
       if (s->scene.liveENaviData.ewazecurrentspeed || s->scene.liveENaviData.ewazeroadspeedlimit) uiText(p, ui_viz_rx, ui_viz_ry+640, "CS:" + QString::number(s->scene.liveENaviData.ewazecurrentspeed, 'f', 0) + "/RS:" + QString::number(s->scene.liveENaviData.ewazeroadspeedlimit, 'f', 0));
@@ -982,13 +982,13 @@ void HudRenderer::draw(QPainter &p, const QRect &surface_rect) {
 
     QString road_name = "";
     QString oref = "";
-    if (s->scene.navi_select == 1 && s->scene.liveMapData.ocurrentRoadName == "") {
-      road_name = QString::fromStdString(s->scene.liveENaviData.ekisaroadname);
-    } else if (s->scene.navi_select == 2) {
-      road_name = QString::fromStdString(s->scene.liveENaviData.ewazeroadname);
-    } else if (s->scene.osm_enabled) {
+    if (s->scene.osm_enabled && s->scene.liveMapData.ocurrentRoadName != "") {
       road_name = QString::fromStdString(s->scene.liveMapData.ocurrentRoadName);
       oref = QString::fromStdString(s->scene.liveMapData.oref);
+    } else if (s->scene.navi_select == 1 || s->scene.navi_select == 3) {
+      road_name = QString::fromStdString(s->scene.liveENaviData.ekisaroadname);
+    } else if (s->scene.navi_select == 2 || s->scene.navi_select == 4) {
+      road_name = QString::fromStdString(s->scene.liveENaviData.ewazeroadname);
     }
     QDateTime now = QDateTime::currentDateTime();
     QString tvalue = "";

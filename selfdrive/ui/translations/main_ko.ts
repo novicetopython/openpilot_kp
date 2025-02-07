@@ -2661,6 +2661,14 @@ This may take up to a minute.</source>
         <source>Waze</source>
         <translation>웨이즈</translation>
     </message>
+    <message>
+        <source>TMap-UDP</source>
+        <translation>티맵-UDP</translation>
+    </message>
+    <message>
+        <source>Waze-UDP</source>
+        <translation>Waze-UDP</translation>
+    </message>
 </context>
 <context>
     <name>KISAMapboxStyle</name>

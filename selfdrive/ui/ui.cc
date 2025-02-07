@@ -258,7 +258,7 @@ static void update_state(UIState *s) {
       scene.liveENaviData.ekisa8 = lme_data.getKisa8();
       scene.liveENaviData.ekisa9 = lme_data.getKisa9();
     }
-    if (scene.navi_select == 2) {
+    if (scene.navi_select == 2 || scene.navi_select == 4 ) {
       scene.liveENaviData.ewazealertid = lme_data.getWazeAlertId();
       scene.liveENaviData.ewazealertdistance = lme_data.getWazeAlertDistance();
       scene.liveENaviData.ewazeroadspeedlimit = lme_data.getWazeRoadSpeedLimit();

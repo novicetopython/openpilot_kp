@@ -305,8 +305,8 @@ class Controls:
     cs.alertTextMsg2 = str(CO.actuatorsOutput.kisaLog2)
     cs.alertTextMsg3 = str(trace1.global_alertTextMsg3)
 
-    if self.osm_speedlimit_enabled or self.navi_selection == 2:
-      if self.navi_selection == 2:
+    if self.osm_speedlimit_enabled or self.navi_selection in (2, 4):
+      if self.navi_selection in (2, 4):
         cs.limitSpeedCamera = int(round(self.sm['liveENaviData'].wazeRoadSpeedLimit))
         cs.limitSpeedCameraDist = float(self.sm['liveENaviData'].wazeAlertDistance)
       elif self.osm_speedlimit_enabled:
