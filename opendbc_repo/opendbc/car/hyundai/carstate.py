@@ -484,20 +484,8 @@ class CarState(CarStateBase):
       ret.cruiseGapSet = self.cruise_gap
     else:
       if self.user_specific_feature != 38:
-        #ret.cruiseState.available = cp_scc.vl["SCC11"]["MainMode_ACC"] != 0
-        #ret.cruiseState.enabled = cp_scc.vl["SCC12"]["ACCMode"] != 0
-        # Choose correct CAN parser depending on SCC type
-        cp_cruise = cp_cam if self.CP.carFingerprint in CAMERA_SCC_CAR else cp_scc
-        if "SCC11" in cp_cruise.vl and "SCC12" in cp_cruise.vl:
-            ret.cruiseState.available = cp_cruise.vl["SCC11"]["MainMode_ACC"] == 1
-            ret.cruiseState.enabled   = cp_cruise.vl["SCC12"]["ACCMode"] != 0
-            ret.cruiseState.standstill = cp_cruise.vl["SCC11"]["SCCInfoDisplay"] == 4
-            ret.cruiseState.nonAdaptive = cp_cruise.vl["SCC11"]["SCCInfoDisplay"] == 2
-            ret.cruiseState.speed = cp_cruise.vl["SCC11"]["VSetDis"] * speed_conv
-        else:
-            # Fallback if SCC messages are missing
-            ret.cruiseState.available = False
-            ret.cruiseState.enabled = False
+        ret.cruiseState.available = cp_scc.vl["SCC11"]["MainMode_ACC"] != 0
+        ret.cruiseState.enabled = cp_scc.vl["SCC12"]["ACCMode"] != 0
 
       if self.user_specific_feature == 38:
         if self.main_buttons[-1]:
