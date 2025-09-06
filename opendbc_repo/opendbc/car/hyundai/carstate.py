@@ -1031,12 +1031,19 @@ class CarState(CarStateBase):
       ("SAS11", 100),
     ]
 
-    if CP.sccBus == 0 and CP.pcmCruise and not (CP.flags & HyundaiFlags.CAMERA_SCC):
+#    if CP.sccBus == 0 and CP.pcmCruise and not (CP.flags & HyundaiFlags.CAMERA_SCC):
+#      pt_messages += [
+#        ("SCC11", 50),
+#        ("SCC12", 50),
+#      ]
+    # Always add SCC messages from the SCC bus
+    if CP.sccBus == 0:
       pt_messages += [
         ("SCC11", 50),
         ("SCC12", 50),
       ]
-      if CP.flags & HyundaiFlags.USE_FCA.value:
+
+    if CP.flags & HyundaiFlags.USE_FCA.value:
         pt_messages.append(("FCA11", 50))
 
     if CP.enableBsm:
