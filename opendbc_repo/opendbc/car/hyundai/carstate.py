@@ -1078,24 +1078,24 @@ class CarState(CarStateBase):
     ]
 
 #    if CP.openpilotLongitudinalControl and CP.sccBus == 2 or (CP.flags & HyundaiFlags.CAMERA_SCC):
-    if not CP.openpilotLongitudinalControl and (CP.sccBus == 2 or (CP.flags & HyundaiFlags.CAMERA_SCC)):
-      cam_messages += [
-        ("SCC11", 50),
-        ("SCC12", 50),
-      ]
-
-      if CP.scc13Available:
-        cam_messages += [
-          ("SCC13", 50),
-        ]
-
-      if CP.scc14Available:
-        cam_messages += [
-          ("SCC14", 50),
-        ]
-
-      if CP.flags & HyundaiFlags.USE_FCA.value:
-        cam_messages.append(("FCA11", 50))
+#    if not CP.openpilotLongitudinalControl and (CP.sccBus == 2 or (CP.flags & HyundaiFlags.CAMERA_SCC)):
+#      cam_messages += [
+#        ("SCC11", 50),
+#        ("SCC12", 50),
+#      ]
+#
+#      if CP.scc13Available:
+#        cam_messages += [
+#          ("SCC13", 50),
+#        ]
+#
+#      if CP.scc14Available:
+#        cam_messages += [
+#          ("SCC14", 50),
+#        ]
+#
+#      if CP.flags & HyundaiFlags.USE_FCA.value:
+#        cam_messages.append(("FCA11", 50))
 
 
     return {
