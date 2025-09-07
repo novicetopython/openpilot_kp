@@ -502,7 +502,13 @@ class CarState(CarStateBase):
           ret.cruiseState.enabled = ret.cruiseState.available
 
       ret.cruiseState.standstill = cp_scc.vl["SCC11"]["SCCInfoDisplay"] == 4.
-      ret.cruiseState.nonAdaptive = cp_cruise.vl["SCC11"]["SCCInfoDisplay"] == 2.  # Shows 'Cruise Control' on dash
+      #ret.cruiseState.nonAdaptive = cp_cruise.vl["SCC11"]["SCCInfoDisplay"] == 2.  # Shows 'Cruise Control' on dash
+      # patch to fix error
+      if "SCC11" not in cp_cruise.vl:  # Camera SCC
+          ret.cruiseState.nonAdaptive = False
+      else:
+          ret.cruiseState.nonAdaptive = cp_cruise.vl.get("SCC11", {}).get("SCCInfoDisplay", 0) == 2
+
       if self.ufc_mode:
         ret.cruiseState.enabled = ret.cruiseState.available
 
@@ -1019,13 +1025,9 @@ class CarState(CarStateBase):
       ("SAS11", 100),
     ]
 
-#    if CP.sccBus == 0 and CP.pcmCruise and not (CP.flags & HyundaiFlags.CAMERA_SCC):
-#      pt_messages += [
-#        ("SCC11", 50),
-#        ("SCC12", 50),
-#      ]
-    # Always add SCC messages from the SCC bus
-    if CP.sccBus == 0:
+    if CP.sccBus == 0 and CP.pcmCruise and not (CP.flags & HyundaiFlags.CAMERA_SCC):
+    # Patch may be causing errors
+    #if CP.sccBus == 0:
       pt_messages += [
         ("SCC11", 50),
         ("SCC12", 50),
