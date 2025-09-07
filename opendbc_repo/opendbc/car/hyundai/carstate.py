@@ -1078,8 +1078,8 @@ class CarState(CarStateBase):
     ]
 
 #    if CP.openpilotLongitudinalControl and CP.sccBus == 2 or (CP.flags & HyundaiFlags.CAMERA_SCC):
-     if not CP.openpilotLongitudinalControl and (CP.sccBus == 2 or (CP.flags & HyundaiFlags.CAMERA_SCC)):
-       cam_messages += [
+    if not CP.openpilotLongitudinalControl and (CP.sccBus == 2 or (CP.flags & HyundaiFlags.CAMERA_SCC)):
+      cam_messages += [
         ("SCC11", 50),
         ("SCC12", 50),
       ]
