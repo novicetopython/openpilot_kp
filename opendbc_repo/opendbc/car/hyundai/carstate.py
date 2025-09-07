@@ -484,8 +484,11 @@ class CarState(CarStateBase):
       ret.cruiseGapSet = self.cruise_gap
     else:
       if self.user_specific_feature != 38:
-        ret.cruiseState.available = cp_scc.vl["SCC11"]["MainMode_ACC"] != 0
-        ret.cruiseState.enabled = cp_scc.vl["SCC12"]["ACCMode"] != 0
+        #ret.cruiseState.available = cp_scc.vl["SCC11"]["MainMode_ACC"] != 0
+        #ret.cruiseState.enabled = cp_scc.vl["SCC12"]["ACCMode"] != 0
+        #patch for keyerror
+        ret.cruiseState.available = cp_scc.vl.get("SCC11", {}).get("MainMode_ACC", 0) != 0
+        ret.cruiseState.enabled = cp_scc.vl.get("SCC12", {}).get("ACCMode", 0) != 0
 
       if self.user_specific_feature == 38:
         if self.main_buttons[-1]:
@@ -501,9 +504,10 @@ class CarState(CarStateBase):
           ret.cruiseState.available = False
           ret.cruiseState.enabled = ret.cruiseState.available
 
-      ret.cruiseState.standstill = cp_scc.vl["SCC11"]["SCCInfoDisplay"] == 4.
+      #ret.cruiseState.standstill = cp_scc.vl["SCC11"]["SCCInfoDisplay"] == 4.
       #ret.cruiseState.nonAdaptive = cp_cruise.vl["SCC11"]["SCCInfoDisplay"] == 2.  # Shows 'Cruise Control' on dash
       # patch to fix error
+      ret.cruiseState.standstill = cp_scc.vl.get("SCC11", {}).get("SCCInfoDisplay", 0) == 4
       ret.cruiseState.nonAdaptive = cp_cruise.vl.get("SCC11", {}).get("SCCInfoDisplay", 0) == 2
 
       if self.ufc_mode:
@@ -527,13 +531,17 @@ class CarState(CarStateBase):
         ret.cruiseState.speed = 0
       self.cruise_active = self.acc_active
 
-      ret.cruiseState.gapSet = cp_scc.vl["SCC11"]['TauGapSet']
+      #ret.cruiseState.gapSet = cp_scc.vl["SCC11"]['TauGapSet']
+      #patch
+      ret.cruiseState.gapSet = cp_scc.vl.get("SCC11", {}).get("TauGapSet", 0)
       self.cruiseGapSet = ret.cruiseState.gapSet
       ret.cruiseGapSet = self.cruiseGapSet
 
-      self.VSetDis = cp_scc.vl["SCC11"]["VSetDis"]
+      #self.VSetDis = cp_scc.vl["SCC11"]["VSetDis"]
+      self.VSetDis = cp_scc.vl.get("SCC11", {}).get("VSetDis", 0)
       ret.vSetDis = self.VSetDis
-      lead_objspd = cp_scc.vl["SCC11"]["ACC_ObjRelSpd"]
+      #lead_objspd = cp_scc.vl["SCC11"]["ACC_ObjRelSpd"]
+      lead_objspd = cp_scc.vl.get("SCC11", {}).get("ACC_ObjRelSpd", 0)
       ret.radarVRel = lead_objspd
       self.lead_objspd = lead_objspd * CV.MS_TO_KPH
 
@@ -1022,13 +1030,17 @@ class CarState(CarStateBase):
       ("SAS11", 100),
     ]
 
-    if CP.sccBus == 0 and CP.pcmCruise and not (CP.flags & HyundaiFlags.CAMERA_SCC):
+    #if CP.sccBus == 0 and CP.pcmCruise and not (CP.flags & HyundaiFlags.CAMERA_SCC):
     # Patch may be causing errors
-    #if CP.sccBus == 0:
-      pt_messages += [
-        ("SCC11", 50),
-        ("SCC12", 50),
-      ]
+    pt_messages += [
+      ("SCC11", 50),
+      ("SCC12", 50),
+    ]
+
+    if CP.scc13Available:
+      pt_messages.append(("SCC13", 50))
+    if CP.scc14Available:
+      pt_messages.append(("SCC14", 50))
 
     if CP.flags & HyundaiFlags.USE_FCA.value:
         pt_messages.append(("FCA11", 50))
@@ -1047,6 +1059,7 @@ class CarState(CarStateBase):
         ("EMS12", 100),
         ("EMS16", 100),
       ]
+
       if CP.emsAvailable:
         pt_messages += [
           ("EMS_366", 100),
@@ -1065,7 +1078,6 @@ class CarState(CarStateBase):
       if CP.lvrAvailable:
         pt_messages.append(("LVR11", 100))
 
-
     if CP.flags & HyundaiFlags.HAS_LDA_BUTTON:
       pt_messages.append(("BCM_PO_11", 50))
 
@@ -1074,28 +1086,17 @@ class CarState(CarStateBase):
 
     cam_messages = [
       ("LKAS11", 100)
+      # ✅ Optional: also mirror SCC messages onto cam bus for Camera SCC
+      ("SCC11", 50),
+      ("SCC12", 50),
     ]
 
-#    if CP.openpilotLongitudinalControl and CP.sccBus == 2 or (CP.flags & HyundaiFlags.CAMERA_SCC):
-#    if not CP.openpilotLongitudinalControl and (CP.sccBus == 2 or (CP.flags & HyundaiFlags.CAMERA_SCC)):
-#      cam_messages += [
-#        ("SCC11", 50),
-#        ("SCC12", 50),
-#      ]
-#
-#      if CP.scc13Available:
-#        cam_messages += [
-#          ("SCC13", 50),
-#        ]
-#
-#      if CP.scc14Available:
-#        cam_messages += [
-#          ("SCC14", 50),
-#        ]
-#
-#      if CP.flags & HyundaiFlags.USE_FCA.value:
-#        cam_messages.append(("FCA11", 50))
-
+    if CP.scc13Available:
+      cam_messages.append(("SCC13", 50))
+    if CP.scc14Available:
+      cam_messages.append(("SCC14", 50))
+    if CP.flags & HyundaiFlags.USE_FCA.value:
+      cam_messages.append(("FCA11", 50))
 
     return {
       Bus.pt: CANParser(DBC[CP.carFingerprint][Bus.pt], pt_messages, 0),
