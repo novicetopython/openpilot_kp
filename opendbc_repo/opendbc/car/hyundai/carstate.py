@@ -504,10 +504,7 @@ class CarState(CarStateBase):
       ret.cruiseState.standstill = cp_scc.vl["SCC11"]["SCCInfoDisplay"] == 4.
       #ret.cruiseState.nonAdaptive = cp_cruise.vl["SCC11"]["SCCInfoDisplay"] == 2.  # Shows 'Cruise Control' on dash
       # patch to fix error
-      if "SCC11" not in cp_cruise.vl:  # Camera SCC
-          ret.cruiseState.nonAdaptive = False
-      else:
-          ret.cruiseState.nonAdaptive = cp_cruise.vl.get("SCC11", {}).get("SCCInfoDisplay", 0) == 2
+      ret.cruiseState.nonAdaptive = cp_cruise.vl.get("SCC11", {}).get("SCCInfoDisplay", 0) == 2
 
       if self.ufc_mode:
         ret.cruiseState.enabled = ret.cruiseState.available
