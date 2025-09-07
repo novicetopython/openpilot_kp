@@ -484,11 +484,11 @@ class CarState(CarStateBase):
       ret.cruiseGapSet = self.cruise_gap
     else:
       if self.user_specific_feature != 38:
-        #ret.cruiseState.available = cp_scc.vl["SCC11"]["MainMode_ACC"] != 0
-        #ret.cruiseState.enabled = cp_scc.vl["SCC12"]["ACCMode"] != 0
+        ret.cruiseState.available = cp_scc.vl["SCC11"]["MainMode_ACC"] != 0
+        ret.cruiseState.enabled = cp_scc.vl["SCC12"]["ACCMode"] != 0
         #patch for keyerror
-        ret.cruiseState.available = cp_scc.vl.get("SCC11", {}).get("MainMode_ACC", 0) != 0
-        ret.cruiseState.enabled = cp_scc.vl.get("SCC12", {}).get("ACCMode", 0) != 0
+        #ret.cruiseState.available = cp_scc.vl.get("SCC11", {}).get("MainMode_ACC", 0) != 0
+        #ret.cruiseState.enabled = cp_scc.vl.get("SCC12", {}).get("ACCMode", 0) != 0
 
       if self.user_specific_feature == 38:
         if self.main_buttons[-1]:
@@ -531,17 +531,17 @@ class CarState(CarStateBase):
         ret.cruiseState.speed = 0
       self.cruise_active = self.acc_active
 
-      #ret.cruiseState.gapSet = cp_scc.vl["SCC11"]['TauGapSet']
+      ret.cruiseState.gapSet = cp_scc.vl["SCC11"]['TauGapSet']
       #patch
-      ret.cruiseState.gapSet = cp_scc.vl.get("SCC11", {}).get("TauGapSet", 0)
+      #ret.cruiseState.gapSet = cp_scc.vl.get("SCC11", {}).get("TauGapSet", 0)
       self.cruiseGapSet = ret.cruiseState.gapSet
       ret.cruiseGapSet = self.cruiseGapSet
 
-      #self.VSetDis = cp_scc.vl["SCC11"]["VSetDis"]
-      self.VSetDis = cp_scc.vl.get("SCC11", {}).get("VSetDis", 0)
+      self.VSetDis = cp_scc.vl["SCC11"]["VSetDis"]
+      #self.VSetDis = cp_scc.vl.get("SCC11", {}).get("VSetDis", 0)
       ret.vSetDis = self.VSetDis
-      #lead_objspd = cp_scc.vl["SCC11"]["ACC_ObjRelSpd"]
-      lead_objspd = cp_scc.vl.get("SCC11", {}).get("ACC_ObjRelSpd", 0)
+      lead_objspd = cp_scc.vl["SCC11"]["ACC_ObjRelSpd"]
+      #lead_objspd = cp_scc.vl.get("SCC11", {}).get("ACC_ObjRelSpd", 0)
       ret.radarVRel = lead_objspd
       self.lead_objspd = lead_objspd * CV.MS_TO_KPH
 
@@ -1031,7 +1031,6 @@ class CarState(CarStateBase):
     ]
 
     #if CP.sccBus == 0 and CP.pcmCruise and not (CP.flags & HyundaiFlags.CAMERA_SCC):
-    # Patch may be causing errors
     pt_messages += [
       ("SCC11", 50),
       ("SCC12", 50),
