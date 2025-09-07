@@ -1085,7 +1085,7 @@ class CarState(CarStateBase):
       pt_messages.append(("TPMS11", 0))
 
     cam_messages = [
-      ("LKAS11", 100)
+      ("LKAS11", 100),
       # ✅ Optional: also mirror SCC messages onto cam bus for Camera SCC
       ("SCC11", 50),
       ("SCC12", 50),
