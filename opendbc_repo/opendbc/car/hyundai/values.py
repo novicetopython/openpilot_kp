@@ -930,3 +930,8 @@ LEGACY_SAFETY_MODE_CAR_ALT = CAR.with_flags(HyundaiFlags.LEGACY_ALT)
 UNSUPPORTED_LONGITUDINAL_CAR = CAR.with_flags(HyundaiFlags.LEGACY) | CAR.with_flags(HyundaiFlags.UNSUPPORTED_LONGITUDINAL)
 
 DBC = CAR.create_dbc_map()
+
+# Ensure Camera-SCC cars have a CAM bus entry (use SCC DBC as fallback)
+for car in CAMERA_SCC_CAR:
+  if Bus.cam not in DBC[car]:
+    DBC[car][Bus.cam] = DBC[car][Bus.scc]
