@@ -931,7 +931,7 @@ UNSUPPORTED_LONGITUDINAL_CAR = CAR.with_flags(HyundaiFlags.LEGACY) | CAR.with_fl
 
 DBC = CAR.create_dbc_map()
 
-# Ensure Camera-SCC cars have a CAM bus entry (use SCC DBC as fallback)
+# Ensure Camera-SCC cars have a CAM bus entry (fall back to PT DBC if needed)
 for car in CAMERA_SCC_CAR:
   if Bus.cam not in DBC[car]:
-    DBC[car][Bus.cam] = DBC[car][Bus.scc]
+    DBC[car][Bus.cam] = DBC[car][Bus.pt]
