@@ -373,7 +373,9 @@ class CarState(CarStateBase):
     self.prev_lkas_button_on = self.lkas_button_on
 
     ret = structs.CarState()
-    cp_cruise = cp_cam if self.CP.flags & HyundaiFlags.CAMERA_SCC or self.CP.sccBus == 2 else cp
+    #cp_cruise = cp_cam if self.CP.flags & HyundaiFlags.CAMERA_SCC or self.CP.sccBus == 2 else cp
+    # patch
+    cp_cruise = cp_cam if self.CP.flags & HyundaiFlags.CAMERA_SCC else cp
     self.is_metric = cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"] == 0
     speed_conv = CV.KPH_TO_MS if self.is_metric else CV.MPH_TO_MS
 
